@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Otaku Ultra Cool ❄️😎</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --panel-bg: rgba(20, 20, 40, 0.7);
+            --text: #e0e0ff;
+            --accent: #ff4da6;
+            --accent2: #7df9ff;
+            --glow: 0 0 25px currentColor;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: var(--text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fond de particules animées */
+        #particlesCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            width: 95%;
+            max-width: 1300px;
+            backdrop-filter: blur(20px);
+            background: var(--panel-bg);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            margin: 20px 0;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            text-align: center;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(255,77,166,0.6));
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aab;
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .flex-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .controls {
+            flex: 1 1 360px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent2);
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255,77,166,0.5);
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 8px;
+        }
+
+        .theme-btn {
+            background: #1a1a2a;
+            border: 2px solid transparent;
+            padding: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .theme-btn.active {
+            border-color: white;
+            box-shadow: 0 0 25px currentColor;
+            transform: scale(1.05);
+        }
+
+        .sticker-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .sticker {
+            font-size: 1.8rem;
+            cursor: pointer;
+            filter: grayscale(0.5);
+            transition: 0.2s;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .sticker.selected {
+            filter: grayscale(0);
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 0 15px gold;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            cursor: pointer;
+            color: #000;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            flex: 1;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255,77,166,0.6);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent2);
+            color: var(--accent2);
+            box-shadow: none;
+        }
+
+        .preview-area {
+            flex: 1 1 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        canvas#cardCanvas {
+            width: 100%;
+            max-width: 650px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 40px var(--accent);
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #000;
+        }
+
+        canvas#cardCanvas:hover {
+            transform: perspective(1000px) rotateY(3deg) rotateX(-3deg);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.9), 0 0 60px var(--accent2);
+        }
+
+        #downloadBtn {
+            font-size: 1.3rem;
+            padding: 15px 30px;
+        }
+
+        .file-label {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px dashed #aaa;
+            transition: 0.2s;
+        }
+
+        .file-label:hover {
+            border-color: var(--accent);
+            color: var(--accent2);
+        }
+
+        #photoInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particlesCanvas"></canvas>
+
+    <div class="main-container">
+        <h1>❄️ ID OTAKU ULTRA 😎</h1>
+        <div class="subtitle">✨ Choisis ton destin, aventurier ✨</div>
+
+        <div class="flex-layout">
+            <!-- Commandes -->
+            <div class="controls">
+                <div class="control-group">
+                    <label>📛 Identité</label>
+                    <input type="text" id="nameInput" placeholder="Ex : Kael Hoshino" maxlength="25">
+                </div>
+                <div class="control-group">
+                    <label>⚔️ Classe / Titre</label>
+                    <input type="text" id="titleInput" placeholder="Ex : Chevalier Cyber" maxlength="30">
+                </div>
+                <div class="control-group">
+                    <label>🔢 Niveau</label>
+                    <input type="number" id="levelInput" min="1" max="999" value="99">
+                </div>
+                <div class="control-group">
+                    <label>✨ Affinité</label>
+                    <select id="elementSelect">
+                        <option>🔥 Feu</option>
+                        <option>💧 Eau</option>
+                        <option>🍃 Vent</option>
+                        <option>⛰️ Terre</option>
+                        <option>⚡ Foudre</option>
+                        <option>🌑 Ténèbres</option>
+                        <option selected>✨ Lumière</option>
+                        <option>❄️ Glace</option>
+                        <option>🌀 Espace-Temps</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>💬 Phrase culte</label>
+                    <textarea id="quoteInput" placeholder="Une réplique épique..." maxlength="90"></textarea>
+                </div>
+
+                <div class="control-group">
+                    <label>🎨 Thème visuel</label>
+                    <div class="theme-grid" id="themeContainer">
+                        <!-- Rempli dynamiquement en JS -->
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>🖼️ Stickers (clique pour ajouter)</label>
+                    <div class="sticker-grid" id="stickerContainer">
+                        <!-- Rempli en JS -->
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>🖼️ Photo de profil</label>
+                    <label class="file-label" for="photoInput">📁 Choisir une image (optionnel)</label>
+                    <input type="file" id="photoInput" accept="image/*">
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn" id="randomBtn">🎲 Aléatoire</button>
+                    <button class="btn btn-outline" id="resetBtn">🔄 Reset</button>
+                </div>
+            </div>
+
+            <!-- Prévisualisation -->
+            <div class="preview-area">
+                <canvas id="cardCanvas" width="700" height="420"></canvas>
+                <button class="btn" id="downloadBtn">💾 Télécharger carte PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======================= CONFIGURATION =======================
+        const canvas = document.getElementById('cardCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Éléments du DOM
+        const nameInput = document.getElementById('nameInput');
+        const titleInput = document.getElementById('titleInput');
+        const levelInput = document.getElementById('levelInput');
+        const elementSelect = document.getElementById('elementSelect');
+        const quoteInput = document.getElementById('quoteInput');
+        const photoInput = document.getElementById('photoInput');
+        const randomBtn = document.getElementById('randomBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // État de l'application
+        let userImage = null;
+        let currentTheme = {
+            name: 'Néon Rose',
+            primary: '#ff4da6',
+            secondary: '#7df9ff',
+            bg1: '#1a0a20',
+            bg2: '#061a2b'
+        };
+        let selectedSticker = '⭐'; // sticker actif
+
+        // Thèmes disponibles (super cool)
+        const themes = [
+            { name: '🌸 Sakura', primary: '#ffb7c5', secondary: '#ffe4f3', bg1: '#2d111b', bg2: '#1f1124',
+                emoji: '🌸' },
+            { name: '❄️ Glace Éternelle', primary: '#a5f3fc', secondary: '#e0f2fe', bg1: '#0b1c2b',
+                bg2: '#05101a', emoji: '❄️' },
+            { name: '🔥 Démon Flamme', primary: '#fb923c', secondary: '#fbbf24', bg1: '#2b1408', bg2: '#1f0a05',
+                emoji: '🔥' },
+            { name: '⚡ Cyber Volt', primary: '#facc15', secondary: '#38bdf8', bg1: '#0a0f1e', bg2: '#050b18',
+                emoji: '⚡' },
+            { name: '🕶️ Néo-Tokyo', primary: '#c084fc', secondary: '#f472b6', bg1: '#0f0f1a', bg2: '#1a0f2b',
+                emoji: '🌆' },
+            { name: '🌌 Astral', primary: '#818cf8', secondary: '#c4b5fd', bg1: '#0b0b20', bg2: '#10082b',
+                emoji: '✨' },
+        ];
+
+        // Stickers disponibles
+        const stickers = ['⭐', '💀', '⚡', '🌀', '🌸', '🎴', '🔮', '🗡️', '🛡️', '💎', '🔥', '❄️', '👑', '🎭'];
+
+        // Sons (petits bips via AudioContext)
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playBeep(freq = 800, duration = 0.1) {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                // silencieux si pas d'interaction utilisateur
+            }
+        }
+
+        // ======================= FOND ANIMÉ (particules) =======================
+        const particlesCanvas = document.getElementById('particlesCanvas');
+        const pCtx = particlesCanvas.getContext('2d');
+        let particles = [];
+        const PARTICLE_COUNT = 70;
+
+        function resizeParticlesCanvas() {
+            particlesCanvas.width = window.innerWidth;
+            particlesCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeParticlesCanvas);
+        resizeParticlesCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * particlesCanvas.width;
+                this.y = Math.random() * particlesCanvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.8;
+                this.speedY = (Math.random() - 0.5) * 0.8;
+                this.opacity = Math.random() * 0.7 + 0.3;
+                this.color =
+                    `rgba(${Math.floor(Math.random()*155+100)}, ${Math.floor(Math.random()*155+100)}, 255, ${this.opacity})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > particlesCanvas.width || this.y < 0 || this.y > particlesCanvas.height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                pCtx.beginPath();
+                pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                pCtx.fillStyle = this.color;
+                pCtx.shadowColor = '#7df9ff';
+                pCtx.shadowBlur = this.size * 4;
+                pCtx.fill();
+            }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            pCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            // lignes entre particules proches
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        pCtx.beginPath();
+                        pCtx.moveTo(particles[i].x, particles[i].y);
+                        pCtx.lineTo(particles[j].x, particles[j].y);
+                        pCtx.strokeStyle = `rgba(125, 249, 255, ${0.2 * (1 - dist / 100)})`;
+                        pCtx.lineWidth = 0.6;
+                        pCtx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ======================= GESTION DES THÈMES =======================
+        const themeContainer = document.getElementById('themeContainer');
+        themes.forEach((theme, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'theme-btn';
+            if (index === 0) btn.classList.add('active');
+            btn.textContent = theme.emoji;
+            btn.title = theme.name;
+            btn.style.color = theme.primary;
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTheme = theme;
+                drawCard();
+                playBeep(600, 0.08);
+            });
+            themeContainer.appendChild(btn);
+        });
+        // Thème par défaut
+        currentTheme = themes[0];
+
+        // ======================= STICKERS =======================
+        const stickerContainer = document.getElementById('stickerContainer');
+        stickers.forEach(st => {
+            const span = document.createElement('span');
+            span.className = 'sticker';
+            if (st === selectedSticker) span.classList.add('selected');
+            span.textContent = st;
+            span.addEventListener('click', () => {
+                document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected'));
+                span.classList.add('selected');
+                selectedSticker = st;
+                drawCard();
+                playBeep(1000, 0.06);
+            });
+            stickerContainer.appendChild(span);
+        });
+
+        // ======================= CHARGEMENT IMAGE =======================
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) {
+                userImage = null;
+                drawCard();
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    userImage = img;
+                    drawCard();
+                    playBeep(880, 0.1);
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // ======================= MISE À JOUR LIVE =======================
+        [nameInput, titleInput, levelInput, elementSelect, quoteInput].forEach(input => {
+            input.addEventListener('input', drawCard);
+            input.addEventListener('change', drawCard);
+        });
+
+        // ======================= DESSIN DE LA CARTE (ULTIME) =======================
+        function drawCard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const p = currentTheme.primary;
+            const s = currentTheme.secondary;
+            const bg1 = currentTheme.bg1;
+            const bg2 = currentTheme.bg2;
+
+            // Fond de carte avec dégradé dynamique
+            const bgGrad = ctx.createLinearGradient(0, 0, w * 0.6, h);
+            bgGrad.addColorStop(0, bg1);
+            bgGrad.addColorStop(1, bg2);
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Effet de grille cyberpunk
+            ctx.strokeStyle = p + '22';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < w; i += 25) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, h);
+                ctx.stroke();
+            }
+            for (let j = 0; j < h; j += 25) {
+                ctx.beginPath();
+                ctx.moveTo(0, j);
+                ctx.lineTo(w, j);
+                ctx.stroke();
+            }
+
+            // Rectangle carte principale avec glow
+            const cardX = 25,
+                cardY = 20,
+                cardW = w - 50,
+                cardH = h - 40;
+            const radius = 30;
+
+            ctx.save();
+            ctx.shadowColor = p;
+            ctx.shadowBlur = 30;
+            ctx.beginPath();
+            ctx.moveTo(cardX + radius, cardY);
+            ctx.lineTo(cardX + cardW - radius, cardY);
+            ctx.quadraticCurveTo(cardX + cardW, cardY, cardX + cardW, cardY + radius);
+            ctx.lineTo(cardX + cardW, cardY + cardH - radius);
+            ctx.quadraticCurveTo(cardX + cardW, cardY + cardH, cardX + cardW - radius, cardY + cardH);
+            ctx.lineTo(cardX + radius, cardY + cardH);
+            ctx.quadraticCurveTo(cardX, cardY + cardH, cardX, cardY + cardH - radius);
+            ctx.lineTo(cardX, cardY + radius);
+            ctx.quadraticCurveTo(cardX, cardY, cardX + radius, cardY);
+            ctx.closePath();
+
+            const cardGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
+            cardGrad.addColorStop(0, 'rgba(20,10,30,0.85)');
+            cardGrad.addColorStop(1, 'rgba(5,15,25,0.95)');
+            ctx.fillStyle = cardGrad;
+            ctx.fill();
+            ctx.strokeStyle = p;
+            ctx.lineWidth = 6;
+            ctx.stroke();
+            ctx.restore();
+
+            // Bordure intérieure décorative
+            ctx.beginPath();
+            ctx.moveTo(cardX + 35, cardY + 18);
+            ctx.lineTo(cardX + cardW - 35, cardY + 18);
+            ctx.lineTo(cardX + cardW - 35, cardY + cardH - 18);
+            ctx.lineTo(cardX + 35, cardY + cardH - 18);
+            ctx.closePath();
+            ctx.strokeStyle = s;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([10, 10]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Photo de profil (cercle avec effet de bordure brillante)
+            const photoCenterX = 145,
+                photoCenterY = 210;
+            const photoRadius = 80;
+
+            ctx.save();
+            ctx.shadowColor = p;
+            ctx.shadowBlur = 25;
+            ctx.beginPath();
+            ctx.arc(photoCenterX, photoCenterY, photoRadius, 0, 2 * Math.PI);
+            ctx.clip();
+
+            if (userImage) {
+                const imgRatio = userImage.width / userImage.height;
+                let drawWidth, drawHeight, offsetX, offsetY;
+                if (imgRatio > 1) {
+                    drawHeight = photoRadius * 2;
+                    drawWidth = drawHeight * imgRatio;
+                    offsetX = photoCenterX - drawWidth / 2;
+                    offsetY = photoCenterY - photoRadius;
+                } else {
+                    drawWidth = photoRadius * 2;
+                    drawHeight = drawWidth / imgRatio;
+                    offsetX = photoCenterX - photoRadius;
+                    offsetY = photoCenterY - drawHeight / 2;
+                }
+                ctx.drawImage(userImage, offsetX, offsetY, drawWidth, drawHeight);
+            } else {
+                const grad = ctx.createLinearGradient(photoCenterX - photoRadius, photoCenterY - photoRadius,
+                    photoCenterX + photoRadius, photoCenterY + photoRadius);
+                grad.addColorStop(0, p);
+                grad.addColorStop(1, s);
+                ctx.fillStyle = grad;
+                ctx.fillRect(photoCenterX - photoRadius, photoCenterY - photoRadius, photoRadius * 2, photoRadius * 2);
+                ctx.fillStyle = '#fff';
+                ctx.font = '55px "Segoe UI Emoji", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('👤', photoCenterX, photoCenterY);
+            }
+            ctx.restore();
+
+            // Cercle de bordure photo
+            ctx.beginPath();
+            ctx.arc(photoCenterX, photoCenterY, photoRadius, 0, 2 * Math.PI);
+            ctx.strokeStyle = p;
+            ctx.lineWidth = 6;
+            ctx.stroke();
+            // Deuxième cercle effet néon
+            ctx.beginPath();
+            ctx.arc(photoCenterX, photoCenterY, photoRadius + 4, 0, 2 * Math.PI);
+            ctx.strokeStyle = s;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Sticker décoratif sur la photo (en bas à droite)
+            ctx.font = '30px "Segoe UI Emoji"';
+            ctx.fillStyle = '#fff';
+            ctx.shadowColor = p;
+            ctx.shadowBlur = 15;
+            ctx.fillText(selectedSticker, photoCenterX + 50, photoCenterY + 55);
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+
+            // Informations texte
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px "Orbitron", "Rajdhani", sans-serif';
+            ctx.textAlign = 'left';
+            const name = nameInput.value || 'Kael Hoshino';
+            ctx.fillText(name, 250, 90);
+
+            ctx.fillStyle = s;
+            ctx.font = 'italic 20px "Rajdhani", sans-serif';
+            const title = titleInput.value || 'Cyber Chevalier';
+            ctx.fillText(title, 250, 130);
+
+            // Ligne séparatrice stylée
+            ctx.beginPath();
+            ctx.moveTo(250, 150);
+            ctx.lineTo(600, 150);
+            ctx.strokeStyle = p;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(250, 153);
+            ctx.lineTo(600, 153);
+            ctx.strokeStyle = s;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 22px "Rajdhani", sans-serif';
+            ctx.fillText('Niveau : ' + (levelInput.value || '99'), 250, 200);
+            ctx.fillText('Affinité : ' + elementSelect.value, 250, 240);
+
+            // Citation
+            ctx.fillStyle = '#ddd';
+            ctx.font = 'italic 18px "Rajdhani", sans-serif';
+            let quote = quoteInput.value.trim() || '"L\'avenir appartient à ceux qui osent."';
+            const maxWidth = 350;
+            if (ctx.measureText(quote).width > maxWidth) {
+                while (ctx.measureText(quote + '...').width > maxWidth && quote.length > 0) {
+                    quote = quote.slice(0, -1);
+                }
+                quote += '...';
+            }
+            ctx.fillText(quote, 250, 290);
+
+            // Badge ID
+            ctx.fillStyle = p + 'dd';
+            ctx.font = 'bold 16px "Orbitron", sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText('ID OTAKU // オタク', 640, 380);
+
+            // Code-barres dynamique
+            for (let i = 0; i < 45; i++) {
+                const barX = 500 + i * 3;
+                const barH = Math.sin(i) * 15 + 20;
+                ctx.fillStyle = i % 3 === 0 ? p : s;
+                ctx.fillRect(barX, 330, 2, barH);
+            }
+
+            // Effet "scanline" de cyber carte
+            ctx.fillStyle = 'rgba(255,255,255,0.02)';
+            for (let y = 0; y < h; y += 4) {
+                ctx.fillRect(0, y, w, 2);
+            }
+        }
+
+        // ======================= FONCTIONS BOUTONS =======================
+        function randomData() {
+            const names = ['Ryuu', 'Sakura', 'Hiro', 'Yuki', 'Kenji', 'Akira', 'Miyu', 'Takeshi'];
+            const titles = ['Samouraï des Ombres', 'Mage Cyber', 'Archer Stellaire', 'Ninja du Vent', 'Berserker Flamme',
+                'Invokeur Galactique'
+            ];
+            const quotes = ['"Plus vite que l\'éclair !"', '"Le pouvoir est en nous."', '"Aucun regret, seulement la voie."',
+                '"Protéger les étoiles."'
+            ];
+
+            nameInput.value = names[Math.floor(Math.random() * names.length)] + ' ' + ['A', 'B', 'C'][Math.floor(Math
+                .random() * 3)];
+            titleInput.value = titles[Math.floor(Math.random() * titles.length)];
+            levelInput.value = Math.floor(Math.random() * 999) + 1;
+            elementSelect.value = elementSelect.options[Math.floor(Math.random() * elementSelect.options.length)].value;
+            quoteInput.value = quotes[Math.floor(Math.random() * quotes.length)];
+            // Thème aléatoire
+            const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+            currentTheme = randomTheme;
+            document.querySelectorAll('.theme-btn').forEach((b, idx) => {
+                b.classList.remove('active');
+                if (themes[idx].name === randomTheme.name) b.classList.add('active');
+            });
+            // Sticker aléatoire
+            selectedSticker = stickers[Math.floor(Math.random() * stickers.length)];
+            document.querySelectorAll('.sticker').forEach(s => {
+                s.classList.remove('selected');
+                if (s.textContent === selectedSticker) s.classList.add('selected');
+            });
+            drawCard();
+            playBeep(1100, 0.12);
+        }
+
+        function resetForm() {
+            nameInput.value = '';
+            titleInput.value = '';
+            levelInput.value = '99';
+            elementSelect.value = '✨ Lumière';
+            quoteInput.value = '';
+            userImage = null;
+            photoInput.value = '';
+            currentTheme = themes[0];
+            document.querySelectorAll('.theme-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+            selectedSticker = '⭐';
+            document.querySelectorAll('.sticker').forEach(s => {
+                s.classList.remove('selected');
+                if (s.textContent === '⭐') s.classList.add('selected');
+            });
+            drawCard();
+            playBeep(400, 0.15);
+        }
+
+        randomBtn.addEventListener('click', randomData);
+        resetBtn.addEventListener('click', resetForm);
+
+        downloadBtn.addEventListener('click', () => {
+            playBeep(1200, 0.1);
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.download = 'carte-otaku-ultra.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }, 120);
+        });
+
+        // Sauvegarde/Restauration locale (localStorage)
+        function saveToLocal() {
+            const data = {
+                name: nameInput.value,
+                title: titleInput.value,
+                level: levelInput.value,
+                element: elementSelect.value,
+                quote: quoteInput.value,
+                theme: currentTheme.name,
+                sticker: selectedSticker
+            };
+            localStorage.setItem('otakuCardData', JSON.stringify(data));
+        }
+
+        function loadFromLocal() {
+            const saved = localStorage.getItem('otakuCardData');
+            if (!saved) return;
+            try {
+                const data = JSON.parse(saved);
+                nameInput.value = data.name || '';
+                titleInput.value = data.title || '';
+                levelInput.value = data.level || '99';
+                elementSelect.value = data.element || '✨ Lumière';
+                quoteInput.value = data.quote || '';
+                const theme = themes.find(t => t.name === data.theme);
+                if (theme) {
+                    currentTheme = theme;
+                    document.querySelectorAll('.theme-btn').forEach((b, i) => {
+                        b.classList.remove('active');
+                        if (themes[i].name === theme.name) b.classList.add('active');
+                    });
+                }
+                selectedSticker = data.sticker || '⭐';
+                document.querySelectorAll('.sticker').forEach(s => {
+                    s.classList.remove('selected');
+                    if (s.textContent === selectedSticker) s.classList.add('selected');
+                });
+            } catch (e) {}
+            drawCard();
+        }
+
+        // Sauvegarde à chaque modification
+        [nameInput, titleInput, levelInput, elementSelect, quoteInput].forEach(input => {
+            input.addEventListener('input', () => {
+                drawCard();
+                saveToLocal();
+            });
+        });
+        // Écouteurs supplémentaires pour sauvegarde thème/sticker
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.theme-btn') || e.target.closest('.sticker')) {
+                setTimeout(saveToLocal, 50);
+            }
+        });
+
+        window.addEventListener('load', () => {
+            loadFromLocal();
+            drawCard();
+        });
+
+        // Rendu initial
+        drawCard();
+    </script>
+</body>
+</html>
